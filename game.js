@@ -8,10 +8,27 @@ function preload () {
   this.load.image('wizard', 'https://s3.amazonaws.com/codecademy-content/projects/learn-phaser/cyoa/wizard.png');
 }
 
+function create() {
+    gameState.background = this.add.image(0, 0, 'bg');
+    gameState.background.setOrigin(0, 0);
+    renderCharacter(this, 'knight');
+    gameState.character.setOrigin(.5, 1);
+    gameState.character.setScale(.7);
+    initializePage(this);
+    const firstPage = fetchPage(1);
+    displayPage(this, firstPage);
+}
+
+function renderCharacter(scene, key) {
+ if (gameState.character) {
+    gameState.character.destroy();
+    }
+    gameState.character = scene.add.image(270, 340, key);
+}
+
 function initializePage(scene) {
   // create options list and background
   // and saves them into gameState
-
   if (!gameState.options) {
     // create options list
     // if it doesn't exist
