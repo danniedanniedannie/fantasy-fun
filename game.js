@@ -8,27 +8,29 @@ function preload () {
   this.load.image('wizard', 'https://s3.amazonaws.com/codecademy-content/projects/learn-phaser/cyoa/wizard.png');
 }
 
-function create() {
-    gameState.background = this.add.image(0, 0, 'bg');
-    gameState.background.setOrigin(0, 0);
-    renderCharacter(this, 'knight');
-    gameState.character.setOrigin(.5, 1);
-    gameState.character.setScale(.7);
-    initializePage(this);
-    const firstPage = fetchPage(1);
-    displayPage(this, firstPage);
+function create () {
+  gameState.background = this.add.image(0,0,'bg');
+  gameState.background.setOrigin(0,0);
+
+  initializePage(this);
+  const firstPage = fetchPage(1);
+  displayPage(this, firstPage);
 }
 
-function renderCharacter(scene, key) {
- if (gameState.character) {
+function renderCharacter (scene, key) {
+  if (gameState.character) {
     gameState.character.destroy();
-    }
-    gameState.character = scene.add.image(270, 340, key);
+  }
+
+  gameState.character = scene.add.image(270,340,key);
+  gameState.character.setOrigin(.5,1);
+  gameState.character.setScale(.7);
 }
 
 function initializePage(scene) {
   // create options list and background
   // and saves them into gameState
+
   if (!gameState.options) {
     // create options list
     // if it doesn't exist
@@ -63,6 +65,7 @@ function displayPage(scene, page) {
   
   // display general page character
   // & narrative here:
+  renderCharacter(scene, page.character);
   gameState.narrative = scene.add.text(65, 380, page.narrative, narrativeStyle);
 
   // for-loop creates different options
@@ -89,8 +92,26 @@ function displayPage(scene, page) {
 
     // add in gameplay functionality
     // for options here
-
-
+	  optionBox.setInteractive();
+    optionBox.on('pointerup', function() {
+      const newPage = this.option.nextPage;
+      if (newPage !== undefined) {
+        destroyPage();
+        displayPage(scene, fetchPage(newPage));
+      }
+    }, { option });
+    optionBox.on('pointerover', function() {
+      this.optionBox.setStrokeStyle(2, 0xffe014, 1);
+      this.optionText.setColor('#ffe014');
+    }, {optionBox, optionText});
+    optionBox.on('pointerout', function() {
+      this.optionBox.setStrokeStyle(1, 0xb38c03, 1);
+      this.optionText.setColor('#b39c0e');
+    }, {optionBox, optionText});
+    gameState.options.push({
+      optionBox,
+      optionText
+    });
   }
 }
 
@@ -102,7 +123,7 @@ const config = {
   height: 550,
   scene: {
     preload,
-    create,
+    create
   }
 };
 
@@ -559,3 +580,4 @@ function fetchPage(page) {
 
   return pages.find(function(e) { if(e.page == page) return e });
 }
+
